@@ -24,18 +24,12 @@ import Icon from './Icon';
 const FeedCard = ({ item, style }) => {
 	const dispatch = useDispatch();
 	const userID = useSelector((state) => state.user.userID);
+	const { isDarkMode } = useSelector((state) => state.theme);
 	const { colors } = useTheme();
 	const isEvent = item.type === 'event';
 	const isPrayerRequest = item.type === 'prayer_request';
 	const [likeSubmitting, setLikeSubmitting] = React.useState(false);
 	const isAnonymousPrayerRequest = Boolean(isPrayerRequest && item.anonymous);
-
-	// Get appropriate colors based on type
-	const typeColors = isEvent
-		? colors.postTypes.event
-		: isPrayerRequest
-		? colors.postTypes.prayerRequest
-		: colors.postTypes.default;
 
 	const handlePress = () => {
 		if (isEvent) {
@@ -179,9 +173,7 @@ const FeedCard = ({ item, style }) => {
 			})}
 		>
 			{/* Left accent border */}
-			<View
-				style={[styles.accentBorder, { backgroundColor: typeColors.accent }]}
-			/>
+			<View style={[styles.accentBorder]} />
 
 			{/* Content */}
 			<View style={styles.content}>
@@ -191,12 +183,15 @@ const FeedCard = ({ item, style }) => {
 					<View
 						style={[
 							styles.typeTag,
-							{
-								backgroundColor: typeColors.tag,
-							},
+							{ backgroundColor: isDarkMode ? 'white' : 'black' },
 						]}
 					>
-						<Text style={[styles.typeTagText, { color: typeColors.tagText }]}>
+						<Text
+							style={[
+								styles.typeTagText,
+								{ color: isDarkMode ? 'black' : 'white' },
+							]}
+						>
 							{isEvent ? 'EVENT' : 'PRAYER REQUEST'}
 						</Text>
 					</View>
@@ -307,11 +302,7 @@ const FeedCard = ({ item, style }) => {
 						onPress={handleToggleLike}
 						disabled={likeSubmitting}
 						style={pressableOpacityStyle({
-							style: [
-								styles.actionButton,
-								{ backgroundColor: colors.surface },
-								likedByUser && { backgroundColor: typeColors.tag },
-							],
+							style: [styles.actionButton, { backgroundColor: colors.surface }],
 							disabled: likeSubmitting,
 							activeOpacity: 0.7,
 						})}
@@ -319,22 +310,20 @@ const FeedCard = ({ item, style }) => {
 						{likeSubmitting ? (
 							<ActivityIndicator
 								size="small"
-								color={likedByUser ? typeColors.tagText : colors.text.secondary}
+								color={likedByUser ? 'red' : colors.text.secondary}
 							/>
 						) : (
 							<Icon.IoniconsIcon
 								name={likedByUser ? 'heart' : 'heart-outline'}
 								size={18}
-								color={likedByUser ? typeColors.tagText : colors.text.secondary}
+								color={likedByUser ? 'red' : colors.text.secondary}
 							/>
 						)}
 						<Text
 							style={[
 								styles.actionText,
 								{
-									color: likedByUser
-										? typeColors.tagText
-										: colors.text.secondary,
+									color: likedByUser ? 'red' : colors.text.secondary,
 								},
 							]}
 						>
