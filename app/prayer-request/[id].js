@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
@@ -7,8 +7,8 @@ import {
 	Image,
 	Keyboard,
 	KeyboardAvoidingView,
-	Pressable,
 	Platform,
+	Pressable,
 	RefreshControl,
 	Text,
 	TextInput,
@@ -381,7 +381,6 @@ export default function PrayerRequestDetail() {
 					value={commentText}
 					onChangeText={setCommentText}
 					multiline
-					maxLength={500}
 				/>
 				<Pressable
 					onPress={handleSubmitComment}

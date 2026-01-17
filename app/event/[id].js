@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
@@ -538,7 +538,6 @@ export default function EventDetail() {
 					value={commentText}
 					onChangeText={setCommentText}
 					multiline
-					maxLength={500}
 				/>
 				<Pressable
 					onPress={handleSubmitComment}

@@ -8,19 +8,37 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_DEVTOOLS_LISTEN_ADDRESS": "0.0.0.0",
+        "EXPO_PUBLIC_HOST_TYPE": "tunnel",
+        "EXPO_PUBLIC_API_URL": "https://informed-fawn-virtually.ngrok-free.app/API/v1",
+        "INITIALIZATION_TIMEOUT": "30",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API_KEY": "AIzaSyCR7lGVD7jb_ul8UiM_9ClvdX5cqA9JTVM",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API": "https://places.googleapis.com/v1"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_DEVTOOLS_LISTEN_ADDRESS": "0.0.0.0",
+        "EXPO_PUBLIC_HOST_TYPE": "tunnel",
+        "EXPO_PUBLIC_API_URL": "https://informed-fawn-virtually.ngrok-free.app/API/v1",
+        "INITIALIZATION_TIMEOUT": "30",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API_KEY": "AIzaSyCR7lGVD7jb_ul8UiM_9ClvdX5cqA9JTVM",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API": "https://places.googleapis.com/v1"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_DEVTOOLS_LISTEN_ADDRESS": "0.0.0.0",
+        "EXPO_PUBLIC_HOST_TYPE": "tunnel",
+        "EXPO_PUBLIC_API_URL": "https://informed-fawn-virtually.ngrok-free.app/API/v1",
+        "INITIALIZATION_TIMEOUT": "30",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API_KEY": "AIzaSyCR7lGVD7jb_ul8UiM_9ClvdX5cqA9JTVM",
+        "EXPO_PUBLIC_GOOGLE_PLACES_API": "https://places.googleapis.com/v1"
       }
     }
   },

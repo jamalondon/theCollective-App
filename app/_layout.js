@@ -128,7 +128,7 @@ function NotificationBootstrapper() {
 
 			const prefsLoaded = preferences?.updated_at != null;
 			if (!prefsLoaded && !loading && !error) {
-				// Ensure we have the server-backed preference before gating registration.
+				// Ensure we have the server-backed preference before registration.
 				dispatch(fetchNotificationPreferences());
 				return;
 			}
