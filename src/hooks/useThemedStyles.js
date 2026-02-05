@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { AuthStyles } from '../constants/styles';
+import { AppStyles, AuthStyles } from '../constants/styles';
 import { selectTheme } from '../store/themeSlice';
 
 /**
@@ -8,10 +8,13 @@ import { selectTheme } from '../store/themeSlice';
  */
 export const useThemedStyles = () => {
 	const { colors } = useSelector(selectTheme);
-	const styles = AuthStyles(colors);
+	const authStyles = AuthStyles(colors);
+	const appStyles = AppStyles(colors);
 	return {
-		AuthStyles: styles,
-		...styles,
+		AuthStyles: authStyles,
+		AppStyles: appStyles,
+		...authStyles,
+		...appStyles,
 	};
 };
 

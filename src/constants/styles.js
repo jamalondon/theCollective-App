@@ -602,11 +602,10 @@ export const AuthStyles = (colors) => {
 			paddingHorizontal: SPACING.xl,
 			paddingTop: SPACING.lg,
 			paddingBottom: SPACING.md,
-		},
-		title: {
-			fontSize: FONTS.sizes.xxl,
-			fontWeight: FONTS.weights.bold,
-			color: colors.text.primary,
+			paddingHorizontal: 0,
+			paddingVertical: SPACING.md,
+			alignItems: 'center',
+			overflow: 'visible',
 			textAlign: 'center',
 		},
 		userInfoRow: {
@@ -673,13 +672,16 @@ export const AuthStyles = (colors) => {
 		},
 		photosContainer: {
 			paddingHorizontal: SPACING.lg,
-			paddingVertical: SPACING.md,
+			//paddingVertical: SPACING.md,
+			width: '100%',
+			height: 300,
 		},
 		photo: {
-			width: '100%',
+			width: '90%',
 			height: 250,
 			borderRadius: 22,
 			marginBottom: SPACING.md,
+			backgroundColor: 'red',
 		},
 		divider: {
 			height: 1,
@@ -776,20 +778,6 @@ export const AuthStyles = (colors) => {
 			fontSize: FONTS.sizes.md,
 			color: colors.error,
 			textAlign: 'center',
-		},
-		typeTag: {
-			alignSelf: 'center',
-			paddingHorizontal: SPACING.md,
-			paddingVertical: SPACING.xs,
-			borderRadius: 4,
-			marginBottom: SPACING.sm,
-			backgroundColor: colors.postTypes.prayerRequest.tag,
-		},
-		typeTagText: {
-			fontSize: FONTS.sizes.xs,
-			fontWeight: FONTS.weights.semibold,
-			letterSpacing: 0.5,
-			color: colors.postTypes.prayerRequest.tagText,
 		},
 	});
 
@@ -946,9 +934,6 @@ export const AuthStyles = (colors) => {
 			fontSize: FONTS.sizes.sm,
 			fontWeight: FONTS.weights.semibold,
 			color: colors.text.secondary,
-		},
-		actionPillTextActive: {
-			color: colors.postTypes.event.tagText,
 		},
 		leaveButton: {
 			backgroundColor: colors.surface,
@@ -1272,5 +1257,140 @@ export const AuthStyles = (colors) => {
 		prayerRequestDetailStyles,
 		eventDetailStyles,
 		profileStyles,
+	};
+};
+
+export const AppStyles = (colors) => {
+	const FeedCardStyles = StyleSheet.create({
+		container: {
+			flexDirection: 'row',
+			borderRadius: 12,
+			marginHorizontal: SPACING.lg,
+			marginVertical: SPACING.sm,
+			overflow: 'hidden',
+			shadowColor: '#000',
+			shadowOffset: {
+				width: 0,
+				height: 2,
+			},
+			shadowOpacity: 0.1,
+			shadowRadius: 4,
+			elevation: 3,
+		},
+		header: {
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+		},
+		deleteButton: {
+			padding: SPACING.xs,
+		},
+		accentBorder: {
+			width: 4,
+		},
+		content: {
+			flex: 1,
+			padding: SPACING.lg,
+		},
+		authorRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: SPACING.sm,
+			marginBottom: SPACING.sm,
+		},
+		avatar: {
+			width: 28,
+			height: 28,
+			borderRadius: 14,
+			overflow: 'hidden',
+			borderWidth: 1,
+			alignItems: 'center',
+			justifyContent: 'center',
+		},
+		avatarImage: {
+			width: '100%',
+			height: '100%',
+		},
+		avatarInitials: {
+			fontSize: FONTS.sizes.xs,
+			fontWeight: FONTS.weights.semibold,
+		},
+		authorName: {
+			flex: 1,
+			fontSize: FONTS.sizes.sm,
+			fontWeight: FONTS.weights.medium,
+		},
+		typeTag: {
+			alignSelf: 'flex-start',
+			paddingHorizontal: SPACING.sm,
+			paddingVertical: SPACING.xs,
+			borderRadius: 4,
+			marginBottom: SPACING.sm,
+		},
+		typeTagText: {
+			fontSize: FONTS.sizes.xs,
+			fontWeight: FONTS.weights.semibold,
+			letterSpacing: 0.5,
+		},
+		title: {
+			fontSize: FONTS.sizes.lg,
+			fontWeight: FONTS.weights.bold,
+			marginBottom: SPACING.sm,
+			lineHeight: 24,
+		},
+		description: {
+			fontSize: FONTS.sizes.sm,
+			lineHeight: 20,
+			marginBottom: SPACING.md,
+		},
+		metaContainer: {
+			gap: SPACING.xs,
+		},
+		metaItem: {
+			flexDirection: 'row',
+			alignItems: 'center',
+		},
+		metaText: {
+			fontSize: FONTS.sizes.xs,
+			fontWeight: FONTS.weights.regular,
+		},
+		actionsRow: {
+			flexDirection: 'row',
+			marginTop: SPACING.md,
+		},
+		actionButton: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			alignSelf: 'flex-start',
+			paddingHorizontal: SPACING.md,
+			paddingVertical: SPACING.sm,
+			borderRadius: 999,
+			gap: SPACING.xs,
+		},
+		actionText: {
+			fontSize: FONTS.sizes.sm,
+			fontWeight: FONTS.weights.semibold,
+		},
+	});
+
+	const likeButtonStyles = StyleSheet.create({
+		button: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			alignSelf: 'flex-start',
+			paddingHorizontal: SPACING.md,
+			paddingVertical: SPACING.sm,
+			borderRadius: 999,
+			gap: SPACING.xs,
+		},
+		text: {
+			fontSize: FONTS.sizes.sm,
+			fontWeight: FONTS.weights.semibold,
+		},
+	});
+
+	return {
+		FeedCardStyles,
+		likeButtonStyles,
 	};
 };

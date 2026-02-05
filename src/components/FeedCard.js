@@ -1,14 +1,6 @@
 import { router } from 'expo-router';
 import React from 'react';
-import {
-	ActivityIndicator,
-	Alert,
-	Image,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FONTS, SPACING } from '../constants/theme';
 import { useTheme } from '../hooks/useThemedStyles';
@@ -20,6 +12,7 @@ import {
 } from '../store/prayerRequestThunk';
 import { pressableOpacityStyle } from '../utils/pressableOpacityStyle';
 import Icon from './Icon';
+import LikeButton from './likeButton';
 
 const FeedCard = ({ item, style }) => {
 	const dispatch = useDispatch();
@@ -143,7 +136,7 @@ const FeedCard = ({ item, style }) => {
 		try {
 			if (isEvent) {
 				const result = dispatch(
-					likedByUser ? unlikeEvent(item.id) : likeEvent(item.id)
+					likedByUser ? unlikeEvent(item.id) : likeEvent(item.id),
 				);
 				if (typeof result.unwrap === 'function') await result.unwrap();
 				else await result;
@@ -151,7 +144,7 @@ const FeedCard = ({ item, style }) => {
 				const result = dispatch(
 					likedByUser
 						? unlikePrayerRequest(item.id)
-						: likePrayerRequest(item.id)
+						: likePrayerRequest(item.id),
 				);
 				if (typeof result.unwrap === 'function') await result.unwrap();
 				else await result;
@@ -298,38 +291,12 @@ const FeedCard = ({ item, style }) => {
 
 				{/* Actions */}
 				<View style={styles.actionsRow}>
-					<Pressable
-						onPress={handleToggleLike}
-						disabled={likeSubmitting}
-						style={pressableOpacityStyle({
-							style: [styles.actionButton, { backgroundColor: colors.surface }],
-							disabled: likeSubmitting,
-							activeOpacity: 0.7,
-						})}
-					>
-						{likeSubmitting ? (
-							<ActivityIndicator
-								size="small"
-								color={likedByUser ? 'red' : colors.text.secondary}
-							/>
-						) : (
-							<Icon.IoniconsIcon
-								name={likedByUser ? 'heart' : 'heart-outline'}
-								size={18}
-								color={likedByUser ? 'red' : colors.text.secondary}
-							/>
-						)}
-						<Text
-							style={[
-								styles.actionText,
-								{
-									color: likedByUser ? 'red' : colors.text.secondary,
-								},
-							]}
-						>
-							{likeCount}
-						</Text>
-					</Pressable>
+					<LikeButton
+						handleToggleLike={handleToggleLike}
+						likeSubmitting={likeSubmitting}
+						likedByUser={likedByUser}
+						likeCount={likeCount}
+					/>
 				</View>
 			</View>
 		</Pressable>

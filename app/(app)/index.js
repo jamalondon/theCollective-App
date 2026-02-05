@@ -62,7 +62,7 @@ export default function AppIndex() {
 	const { colors, isDarkMode } = useTheme();
 	const insets = useSafeAreaInsets();
 	const { newsFeed, newsFeedLoading, newsFeedError } = useSelector(
-		(state) => state.user
+		(state) => state.user,
 	);
 	const [refreshing, setRefreshing] = React.useState(false);
 	const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
@@ -280,7 +280,7 @@ export default function AppIndex() {
 						: [
 								styles.contentContainer,
 								{ paddingBottom: insets.bottom + SPACING.xl },
-						  ]
+							]
 				}
 				showsVerticalScrollIndicator={false}
 			/>

@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+
 import { Stack, router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
@@ -48,7 +49,7 @@ function NotificationBootstrapper() {
 	const dispatch = useDispatch();
 	const token = useSelector((state) => state.user.token);
 	const { loading, error, preferences } = useSelector(
-		(state) => state.notificationPreferences
+		(state) => state.notificationPreferences,
 	);
 	const responseListener = useRef();
 	const receivedListener = useRef();
@@ -70,7 +71,7 @@ function NotificationBootstrapper() {
 					const current = await Notifications.getBadgeCountAsync();
 					await Notifications.setBadgeCountAsync((current || 0) + 1);
 				} catch {}
-			}
+			},
 		);
 
 		// Notification tapped / opened
