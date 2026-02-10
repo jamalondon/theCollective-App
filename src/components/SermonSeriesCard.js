@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {
 	Dimensions,
 	ImageBackground,
+	Platform,
 	Pressable,
 	StyleSheet,
 	Text,
@@ -12,7 +13,8 @@ import { useTheme } from '../hooks/useThemedStyles';
 import { pressableOpacityStyle } from '../utils/pressableOpacityStyle';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.85;
+const CARD_WIDTH = SCREEN_WIDTH - SPACING.xxxl * 2;
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.5;
 
 export default function SermonSeriesCard({ series, onPress }) {
 	const { colors } = useTheme();
@@ -75,9 +77,23 @@ export default function SermonSeriesCard({ series, onPress }) {
 
 const styles = StyleSheet.create({
 	container: {
-		width: SCREEN_WIDTH,
+		width: CARD_WIDTH,
 		height: CARD_HEIGHT,
-		marginBottom: SPACING.lg,
+		marginBottom: SPACING.xl,
+		marginHorizontal: SPACING.xxxl,
+		borderRadius: 24,
+		overflow: 'hidden',
+		...Platform.select({
+			ios: {
+				shadowColor: '#000',
+				shadowOffset: { width: 0, height: 8 },
+				shadowOpacity: 0.3,
+				shadowRadius: 16,
+			},
+			android: {
+				elevation: 12,
+			},
+		}),
 	},
 	coverImage: {
 		width: '100%',
@@ -90,10 +106,10 @@ const styles = StyleSheet.create({
 	},
 	contentContainer: {
 		padding: SPACING.xxxl,
-		paddingBottom: SPACING.xxxl + SPACING.lg,
+		paddingBottom: SPACING.xxxl,
 	},
 	title: {
-		fontSize: FONTS.sizes.xxl + 8,
+		fontSize: FONTS.sizes.xxl + 4,
 		fontWeight: FONTS.weights.bold,
 		color: '#FFFFFF',
 		marginBottom: SPACING.md,

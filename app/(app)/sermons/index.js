@@ -132,9 +132,6 @@ export default function SermonsIndex() {
 				contentContainerStyle={{
 					paddingBottom: insets.bottom + SPACING.xl,
 				}}
-				pagingEnabled
-				snapToAlignment="start"
-				decelerationRate="fast"
 			/>
 			{error ? (
 				<View style={styles.errorContainer}>
