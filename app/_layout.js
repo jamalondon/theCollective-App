@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 
 import { Stack, router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { AppState } from 'react-native';
+import { AppState, useColorScheme } from 'react-native';
 import {
 	SafeAreaProvider,
 	initialWindowMetrics,
@@ -13,6 +13,8 @@ import * as Sentry from '@sentry/react-native';
 import { registerForPushNotificationsAsync } from '../src/notifications/registerForPushNotificationsAsync';
 import store from '../src/store';
 import { fetchNotificationPreferences } from '../src/store/notificationPreferencesThunk';
+import { setSystemTheme, setTheme } from '../src/store/themeSlice';
+import { fetchUserPreferences } from '../src/store/userPreferencesThunk';
 import { registerPushToken } from '../src/store/userThunk';
 
 Sentry.init({
@@ -158,11 +160,54 @@ function NotificationBootstrapper() {
 	return null;
 }
 
+function ThemeBootstrapper() {
+	const dispatch = useDispatch();
+	const systemColorScheme = useColorScheme();
+	const isSystemTheme = useSelector((state) => state.theme.isSystemTheme);
+	const token = useSelector((state) => state.user.token);
+	const preferences = useSelector((state) => state.user.preferences);
+	const prefsFetched = useRef(false);
+
+	// Apply system theme whenever device theme changes
+	useEffect(() => {
+		if (isSystemTheme && systemColorScheme) {
+			dispatch(setSystemTheme(systemColorScheme === 'dark'));
+		}
+	}, [isSystemTheme, systemColorScheme, dispatch]);
+
+	// Fetch user preferences after login
+	useEffect(() => {
+		if (token && !prefsFetched.current) {
+			prefsFetched.current = true;
+			dispatch(fetchUserPreferences());
+		}
+		if (!token) {
+			prefsFetched.current = false;
+		}
+	}, [token, dispatch]);
+
+	// Apply fetched preferences
+	useEffect(() => {
+		if (preferences?.useSystemTheme === true) {
+			const systemIsDark = systemColorScheme === 'dark';
+			dispatch(setSystemTheme(systemIsDark));
+		} else if (
+			preferences?.useSystemTheme === false &&
+			preferences?.darkMode !== undefined
+		) {
+			dispatch(setTheme(preferences.darkMode));
+		}
+	}, [preferences?.useSystemTheme, preferences?.darkMode, systemColorScheme, dispatch]);
+
+	return null;
+}
+
 export default Sentry.wrap(function RootLayout() {
 	return (
 		<Provider store={store}>
 			<SafeAreaProvider initialMetrics={initialWindowMetrics}>
 				<NotificationBootstrapper />
+				<ThemeBootstrapper />
 				<Stack screenOptions={{ headerShown: false }}>
 					<Stack.Screen name="index" />
 					<Stack.Screen name="(app)" />

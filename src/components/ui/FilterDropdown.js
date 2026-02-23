@@ -1,6 +1,6 @@
-import { BlurView } from 'expo-blur';
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useState, useRef } from 'react';
+import { BlurView } from 'expo-blur';
+import React, { useRef, useState } from 'react';
 import {
 	Modal,
 	Platform,
@@ -47,7 +47,9 @@ export default function FilterDropdown({ value, onValueChange, options }) {
 					activeOpacity: 0.7,
 				})}
 			>
-				<Text style={[styles.dropdownButtonText, { color: colors.text.primary }]}>
+				<Text
+					style={[styles.dropdownButtonText, { color: colors.text.primary }]}
+				>
 					{selectedOption?.label || 'Select'}
 				</Text>
 				<MaterialIcons

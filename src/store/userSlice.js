@@ -8,6 +8,10 @@ import {
 	unlikePrayerRequest,
 } from './prayerRequestThunk';
 import {
+	fetchUserPreferences,
+	updateUserPreferences,
+} from './userPreferencesThunk';
+import {
 	fetchUserProfile,
 	getNewsFeed,
 	registerPushToken,
@@ -19,6 +23,18 @@ import {
 	uploadProfilePicture,
 	verifySmsCode,
 } from './userThunk';
+
+// Shared helper to populate user info from any auth-related payload
+const populateUserInfo = (state, payload) => {
+	state.token = payload.token;
+	state.username = payload.username;
+	state.phoneNumber = payload.phoneNumber || '';
+	state.name = payload.name || '';
+	state.userID = payload.userID || '';
+	state.dateOfBirth = payload.dateOfBirth || '';
+	state.profilePicture = payload.profilePicture || '';
+	state.role = payload.role || '';
+};
 
 // Create a slice for user data
 const userSlice = createSlice({
@@ -33,7 +49,10 @@ const userSlice = createSlice({
 		isVerificationRequired: false,
 		preferences: {
 			darkMode: false,
+			useSystemTheme: true,
 		},
+		preferencesLoading: false,
+		preferencesError: '',
 		dateOfBirth: '',
 		profilePicture: '',
 		role: '',
@@ -87,13 +106,7 @@ const userSlice = createSlice({
 				state.phoneNumber = action.payload.phoneNumber;
 				return;
 			}
-			state.token = action.payload.token;
-			state.username = action.payload.username;
-			state.phoneNumber = action.payload.phoneNumber || '';
-			state.userID = action.payload.userID || '';
-			state.name = action.payload.name;
-			state.dateOfBirth = action.payload.dateOfBirth || '';
-			state.profilePicture = action.payload.profilePicture || '';
+			populateUserInfo(state, action.payload);
 			router.replace('/(app)');
 		});
 		builder.addCase(signInUser.rejected, (state, action) => {
@@ -111,12 +124,7 @@ const userSlice = createSlice({
 				state.phoneNumber = action.payload.phoneNumber;
 				return;
 			}
-			state.token = action.payload.token;
-			state.username = action.payload.username;
-			state.phoneNumber = action.payload.phoneNumber || '';
-			state.name = action.payload.name;
-			state.userID = action.payload.userID || '';
-			state.profilePicture = action.payload.profilePicture || '';
+			populateUserInfo(state, action.payload);
 			router.replace('/(app)');
 		});
 		builder.addCase(signUpUser.rejected, (state, action) => {
@@ -127,14 +135,13 @@ const userSlice = createSlice({
 		// Local Sign In cases
 		builder.addCase(tryLocalSignIn.pending, (state) => {});
 		builder.addCase(tryLocalSignIn.fulfilled, (state, action) => {
-			state.token = action.payload.token;
-			state.username = action.payload.username;
-			state.phoneNumber = action.payload.phoneNumber || '';
-			state.name = action.payload.name;
-			state.userID = action.payload.userID || '';
-			state.dateOfBirth = action.payload.dateOfBirth || '';
-			state.profilePicture = action.payload.profilePicture || '';
 			state.errorMessage = '';
+			if (action.payload.verificationRequired) {
+				state.isVerificationRequired = true;
+				state.phoneNumber = action.payload.phoneNumber;
+				return;
+			}
+			populateUserInfo(state, action.payload);
 		});
 		builder.addCase(tryLocalSignIn.rejected, (state) => {
 			// We don't set an error message here as this is a background operation
@@ -151,6 +158,9 @@ const userSlice = createSlice({
 			state.isVerificationRequired = false;
 			state.expoPushToken = '';
 			state.pushTokenError = '';
+			state.preferences = { darkMode: false, useSystemTheme: true };
+			state.preferencesLoading = false;
+			state.preferencesError = '';
 			//redirect back to auth
 			router.replace('/(auth)/welcome');
 		});
@@ -160,13 +170,7 @@ const userSlice = createSlice({
 			state.errorMessage = '';
 		});
 		builder.addCase(verifySmsCode.fulfilled, (state, action) => {
-			state.token = action.payload.token;
-			state.username = action.payload.username;
-			state.phoneNumber = action.payload.phoneNumber || '';
-			state.userID = action.payload.userID || '';
-			state.name = action.payload.name || '';
-			state.dateOfBirth = action.payload.dateOfBirth || '';
-			state.profilePicture = action.payload.profilePicture || '';
+			populateUserInfo(state, action.payload);
 			state.isVerificationRequired = false;
 			state.errorMessage = '';
 			router.replace('/(app)');
@@ -205,11 +209,11 @@ const userSlice = createSlice({
 		builder.addCase(deleteEvent.fulfilled, (state, action) => {
 			const deletedEventId = action.payload;
 			state.newsFeed = state.newsFeed.filter(
-				(item) => item.id !== deletedEventId
+				(item) => item.id !== deletedEventId,
 			);
 			state.newsFeedCounts.events = Math.max(
 				0,
-				state.newsFeedCounts.events - 1
+				state.newsFeedCounts.events - 1,
 			);
 			state.newsFeedCounts.total = Math.max(0, state.newsFeedCounts.total - 1);
 		});
@@ -217,11 +221,11 @@ const userSlice = createSlice({
 		builder.addCase(deletePrayerRequest.fulfilled, (state, action) => {
 			const deletedPrayerRequestId = action.payload;
 			state.newsFeed = state.newsFeed.filter(
-				(item) => item.id !== deletedPrayerRequestId
+				(item) => item.id !== deletedPrayerRequestId,
 			);
 			state.newsFeedCounts.prayerRequests = Math.max(
 				0,
-				state.newsFeedCounts.prayerRequests - 1
+				state.newsFeedCounts.prayerRequests - 1,
 			);
 			state.newsFeedCounts.total = Math.max(0, state.newsFeedCounts.total - 1);
 		});
@@ -299,6 +303,13 @@ const userSlice = createSlice({
 			if (action.payload.activitySummary) {
 				state.activitySummary = action.payload.activitySummary;
 			}
+			// Update preferences if returned from profile endpoint
+			if (action.payload.user?.preferences) {
+				state.preferences = {
+					...state.preferences,
+					...action.payload.user.preferences,
+				};
+			}
 		});
 		builder.addCase(fetchUserProfile.rejected, (state, action) => {
 			state.profileLoading = false;
@@ -317,6 +328,36 @@ const userSlice = createSlice({
 		builder.addCase(uploadProfilePicture.rejected, (state, action) => {
 			state.uploadingProfilePicture = false;
 			state.profileError = action.payload || 'Failed to upload profile picture';
+		});
+
+		// User Preferences
+		builder.addCase(fetchUserPreferences.pending, (state) => {
+			state.preferencesLoading = true;
+			state.preferencesError = '';
+		});
+		builder.addCase(fetchUserPreferences.fulfilled, (state, action) => {
+			state.preferencesLoading = false;
+			state.preferencesError = '';
+			if (action.payload) {
+				state.preferences = { ...state.preferences, ...action.payload };
+			}
+		});
+		builder.addCase(fetchUserPreferences.rejected, (state, action) => {
+			state.preferencesLoading = false;
+			state.preferencesError = action.payload || 'Failed to fetch preferences';
+		});
+
+		builder.addCase(updateUserPreferences.pending, (state) => {
+			state.preferencesError = '';
+		});
+		builder.addCase(updateUserPreferences.fulfilled, (state, action) => {
+			state.preferencesError = '';
+			if (action.payload) {
+				state.preferences = { ...state.preferences, ...action.payload };
+			}
+		});
+		builder.addCase(updateUserPreferences.rejected, (state, action) => {
+			state.preferencesError = action.payload || 'Failed to update preferences';
 		});
 
 		// Push token registration

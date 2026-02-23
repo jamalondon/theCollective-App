@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
 	Dimensions,
@@ -16,7 +17,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.xxxl * 2;
 const CARD_HEIGHT = SCREEN_HEIGHT * 0.5;
 
-export default function SermonSeriesCard({ series, onPress }) {
+export default function SermonSeriesCard({ series, onPress, onEdit }) {
 	const { colors } = useTheme();
 
 	// Validate series properties before rendering
@@ -28,8 +29,8 @@ export default function SermonSeriesCard({ series, onPress }) {
 		end_date: series.end_date
 			? new Date(series.end_date).toLocaleDateString()
 			: null,
-		sermon_count: series.sermons.length >= 0 ? series.sermons.length : 0,
-		cover_image: series.cover_image || null,
+		sermon_count: series.sermons?.length ?? 0,
+		cover_image: series.cover_image?.url || null,
 	};
 
 	const imageSource = validatedSeries.cover_image
@@ -49,6 +50,19 @@ export default function SermonSeriesCard({ series, onPress }) {
 				style={styles.coverImage}
 				resizeMode="cover"
 			>
+				{onEdit && (
+					<Pressable
+						onPress={(e) => {
+							e.stopPropagation();
+							onEdit();
+						}}
+						style={pressableOpacityStyle({
+							style: styles.editIcon,
+						})}
+					>
+						<Ionicons name="create-outline" size={18} color="#fff" />
+					</Pressable>
+				)}
 				<LinearGradient
 					colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
 					style={styles.gradient}
@@ -94,6 +108,18 @@ const styles = StyleSheet.create({
 				elevation: 12,
 			},
 		}),
+	},
+	editIcon: {
+		position: 'absolute',
+		top: SPACING.md,
+		right: SPACING.md,
+		backgroundColor: 'rgba(0,0,0,0.45)',
+		borderRadius: 16,
+		width: 34,
+		height: 34,
+		justifyContent: 'center',
+		alignItems: 'center',
+		zIndex: 10,
 	},
 	coverImage: {
 		width: '100%',

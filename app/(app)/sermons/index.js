@@ -1,14 +1,24 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+	Alert,
+	FlatList,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+import EditSeriesModal from '../../../src/components/EditSeriesModal';
 import FeedSkeleton from '../../../src/components/FeedSkeleton';
 import SermonSeriesCard from '../../../src/components/SermonSeriesCard';
 import FilterDropdown from '../../../src/components/ui/FilterDropdown';
 import { FONTS, SPACING } from '../../../src/constants/theme';
 import { useTheme } from '../../../src/hooks/useThemedStyles';
 import { fetchSeries } from '../../../src/store/sermonThunk';
+import { pressableOpacityStyle } from '../../../src/utils/pressableOpacityStyle';
 
 const FILTER_OPTIONS = [
 	{ label: 'Current Series', value: 'current' },
@@ -22,6 +32,8 @@ export default function SermonsIndex() {
 	const insets = useSafeAreaInsets();
 	const { colors } = useTheme();
 	const [selectedFilter, setSelectedFilter] = useState('current');
+	const [editModalVisible, setEditModalVisible] = useState(false);
+	const [selectedSeries, setSelectedSeries] = useState(null);
 
 	const {
 		current = [],
@@ -30,12 +42,18 @@ export default function SermonsIndex() {
 		loading,
 		error,
 	} = useSelector((s) => s.sermons || {});
+	const { role } = useSelector((s) => s.user);
+	const canEdit = role === 'developer' || role === 'leader';
 
 	useEffect(() => {
 		dispatch(fetchSeries());
 	}, [dispatch]);
 
 	const openSeries = (id) => router.push(`/sermons/${id}`);
+
+	const handleAddSeries = () => {
+		Alert.alert('Coming Soon', 'Adding sermon series will be available soon.');
+	};
 
 	// Get the data based on selected filter
 	const getFilteredData = () => {
@@ -91,7 +109,18 @@ export default function SermonsIndex() {
 			return null;
 		}
 		return (
-			<SermonSeriesCard series={item} onPress={() => openSeries(item.id)} />
+			<SermonSeriesCard
+				series={item}
+				onPress={() => openSeries(item.id)}
+				onEdit={
+					canEdit
+						? () => {
+								setSelectedSeries(item);
+								setEditModalVisible(true);
+							}
+						: undefined
+				}
+			/>
 		);
 	};
 
@@ -112,11 +141,37 @@ export default function SermonsIndex() {
 				},
 			]}
 		>
-			<FilterDropdown
-				value={selectedFilter}
-				onValueChange={setSelectedFilter}
-				options={FILTER_OPTIONS}
-			/>
+			<View style={{ flex: 1, alignItems: 'center' }}>
+				<FilterDropdown
+					value={selectedFilter}
+					onValueChange={setSelectedFilter}
+					options={FILTER_OPTIONS}
+				/>
+			</View>
+
+			{canEdit && (
+				<Pressable
+					onPress={handleAddSeries}
+					style={[
+						pressableOpacityStyle({
+							style: styles.addButton,
+						}),
+						{
+							marginLeft: 'auto', // push to end of row
+							//marginRight: 8,
+						},
+					]}
+				>
+					<Ionicons
+						name="add-circle-outline"
+						size={22}
+						color={colors.primary}
+					/>
+					<Text style={[styles.addButtonText, { color: colors.primary }]}>
+						Add
+					</Text>
+				</Pressable>
+			)}
 		</View>
 	);
 
@@ -138,6 +193,12 @@ export default function SermonsIndex() {
 					<Text style={{ color: colors.text.negative }}>{error}</Text>
 				</View>
 			) : null}
+
+			<EditSeriesModal
+				visible={editModalVisible}
+				onClose={() => setEditModalVisible(false)}
+				series={selectedSeries}
+			/>
 		</View>
 	);
 }
@@ -145,7 +206,10 @@ export default function SermonsIndex() {
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	headerContainer: {
-		alignItems: 'center',
+		flexDirection: 'row',
+		alignItems: 'center', // vertical alignment
+		justifyContent: 'center', // center the whole group horizontally
+		//paddingHorizontal: 16,
 		paddingBottom: SPACING.lg,
 	},
 	emptyContainer: {

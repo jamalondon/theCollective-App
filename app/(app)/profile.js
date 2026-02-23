@@ -10,6 +10,7 @@ import {
 	ScrollView,
 	Switch,
 	Text,
+	useColorScheme,
 	View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +23,8 @@ import {
 	resetNotificationPreferences,
 	updateNotificationPreferences,
 } from '../../src/store/notificationPreferencesThunk';
-import { selectTheme, toggleTheme } from '../../src/store/themeSlice';
+import { selectTheme, setSystemTheme, setTheme } from '../../src/store/themeSlice';
+import { updateUserPreferences } from '../../src/store/userPreferencesThunk';
 import {
 	fetchUserProfile,
 	signOutUser,
@@ -31,7 +33,8 @@ import {
 
 export default function ProfileScreen() {
 	const dispatch = useDispatch();
-	const { colors, isDarkMode } = useSelector(selectTheme);
+	const systemColorScheme = useColorScheme();
+	const { colors, isDarkMode, isSystemTheme } = useSelector(selectTheme);
 	const {
 		name,
 		username,
@@ -89,7 +92,20 @@ export default function ProfileScreen() {
 	};
 
 	const handleToggleTheme = () => {
-		dispatch(toggleTheme());
+		const newDarkMode = !isDarkMode;
+		dispatch(setTheme(newDarkMode));
+		dispatch(updateUserPreferences({ useSystemTheme: false, darkMode: newDarkMode }));
+	};
+
+	const handleToggleSystemTheme = (value) => {
+		if (value) {
+			const systemIsDark = systemColorScheme === 'dark';
+			dispatch(setSystemTheme(systemIsDark));
+			dispatch(updateUserPreferences({ useSystemTheme: true }));
+		} else {
+			dispatch(setTheme(isDarkMode));
+			dispatch(updateUserPreferences({ useSystemTheme: false, darkMode: isDarkMode }));
+		}
 	};
 
 	const handleRetry = () => {
@@ -278,8 +294,44 @@ export default function ProfileScreen() {
 								)}
 							</Pressable>
 
-							{/* Theme Toggle */}
+							{/* Use Device Default */}
 							<View style={styles.settingsOption}>
+								<View style={styles.settingsOptionLeft}>
+									<Ionicons
+										name="phone-portrait-outline"
+										size={24}
+										color={colors.text.primary}
+										style={styles.settingsOptionIcon}
+									/>
+									<View>
+										<Text style={styles.settingsOptionText}>
+											Use Device Default
+										</Text>
+										<Text style={styles.settingsOptionSubtext}>
+											{isSystemTheme
+												? 'Following device setting'
+												: 'Using manual setting'}
+										</Text>
+									</View>
+								</View>
+								<Switch
+									value={isSystemTheme}
+									onValueChange={handleToggleSystemTheme}
+									trackColor={{
+										false: colors.border.default,
+										true: colors.primary,
+									}}
+									thumbColor="#ffffff"
+								/>
+							</View>
+
+							{/* Dark Mode Toggle */}
+							<View
+								style={[
+									styles.settingsOption,
+									isSystemTheme && { opacity: 0.5 },
+								]}
+							>
 								<View style={styles.settingsOptionLeft}>
 									<Ionicons
 										name={isDarkMode ? 'moon' : 'sunny-outline'}
@@ -291,12 +343,14 @@ export default function ProfileScreen() {
 										<Text style={styles.settingsOptionText}>Dark Mode</Text>
 										<Text style={styles.settingsOptionSubtext}>
 											{isDarkMode ? 'Currently enabled' : 'Currently disabled'}
+											{isSystemTheme ? ' (auto)' : ''}
 										</Text>
 									</View>
 								</View>
 								<Switch
 									value={isDarkMode}
 									onValueChange={handleToggleTheme}
+									disabled={isSystemTheme}
 									trackColor={{
 										false: colors.border.default,
 										true: colors.primary,

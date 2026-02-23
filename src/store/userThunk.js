@@ -13,13 +13,13 @@ export const signUpUser = createAsyncThunk(
 	'user/signUp',
 	async (
 		{ name, username, phoneNumber, password, dateOfBirth },
-		{ rejectWithValue, dispatch }
+		{ rejectWithValue, dispatch },
 	) => {
 		try {
 			// Validate input
 			if (!username || !password || !name || !phoneNumber) {
 				throw new Error(
-					'Username, password, name, and phone number are required'
+					'Username, password, name, and phone number are required',
 				);
 			}
 			// Keep Redux actions/state serializable (Date objects are not)
@@ -41,6 +41,7 @@ export const signUpUser = createAsyncThunk(
 					userID: response.data.userID || '',
 					name,
 					dateOfBirth: dateOfBirthIso,
+					role: response.data.role || '',
 				};
 			}
 
@@ -71,7 +72,7 @@ export const signUpUser = createAsyncThunk(
 				// The request was made and the server responded with a status code
 				// that falls out of the range of 2xx
 				return rejectWithValue(
-					error.response.data?.message || 'Server error occurred'
+					error.response.data?.message || 'Server error occurred',
 				);
 			} else if (error.request) {
 				// The request was made but no response was received
@@ -81,7 +82,7 @@ export const signUpUser = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Sign In Thunk
@@ -89,7 +90,7 @@ export const signInUser = createAsyncThunk(
 	'user/signIn',
 	async (
 		{ username, password, phoneNumber },
-		{ rejectWithValue, dispatch }
+		{ rejectWithValue, dispatch },
 	) => {
 		try {
 			const response = await ServerAPI.post('/auth/signin', {
@@ -110,7 +111,7 @@ export const signInUser = createAsyncThunk(
 			}
 
 			await AsyncStorage.setItem('token', response.data.token);
-
+			console.log(response);
 			return {
 				token: response.data.token,
 				username,
@@ -119,11 +120,12 @@ export const signInUser = createAsyncThunk(
 				userID: response.data.userID || '',
 				dateOfBirth: response.data.dateOfBirth || '',
 				profilePicture: response.data.profilePicture || '',
+				role: response.data.role || '',
 			};
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Server error occurred'
+					error.response.data?.message || 'Server error occurred',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -131,7 +133,7 @@ export const signInUser = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Try Auto Sign In from stored token
@@ -160,6 +162,7 @@ export const tryLocalSignIn = createAsyncThunk(
 					userID: response.data.userID || '',
 					dateOfBirth: response.data.dateOfBirth || '',
 					profilePicture: response.data.profilePicture || '',
+					role: response.data.role || '',
 				}; // Return full user data including token
 			} catch (error) {
 				// If token verification fails, clear it from storage
@@ -170,10 +173,10 @@ export const tryLocalSignIn = createAsyncThunk(
 			return rejectWithValue(
 				error.response?.data?.message ||
 					error.message ||
-					'Failed to restore session'
+					'Failed to restore session',
 			);
 		}
-	}
+	},
 );
 
 // Sign Out Thunk
@@ -187,7 +190,7 @@ export const signOutUser = createAsyncThunk(
 		} catch (error) {
 			return rejectWithValue(error.message || 'Failed to sign out');
 		}
-	}
+	},
 );
 
 // Register/Upsert Expo push token for the authenticated user
@@ -221,7 +224,7 @@ export const registerPushToken = createAsyncThunk(
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
-				}
+				},
 			);
 
 			await AsyncStorage.setItem(EXPO_PUSH_TOKEN_STORAGE_KEY, expoPushToken);
@@ -229,7 +232,7 @@ export const registerPushToken = createAsyncThunk(
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Failed to register push token'
+					error.response.data?.message || 'Failed to register push token',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -237,7 +240,7 @@ export const registerPushToken = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Helper function to ensure proper E.164 phone number format
@@ -282,7 +285,7 @@ export const sendVerificationSms = createAsyncThunk(
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Server error occurred'
+					error.response.data?.message || 'Server error occurred',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -290,7 +293,7 @@ export const sendVerificationSms = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Verify SMS Code
@@ -319,11 +322,12 @@ export const verifySmsCode = createAsyncThunk(
 				userID: response.data.userID || '',
 				dateOfBirth: response.data.dateOfBirth || '',
 				profilePicture: response.data.profilePicture || '',
+				role: response.data.role || '',
 			};
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Invalid or expired code'
+					error.response.data?.message || 'Invalid or expired code',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -331,7 +335,7 @@ export const verifySmsCode = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Get News Feed (combined events and prayer requests)
@@ -367,7 +371,7 @@ export const getNewsFeed = createAsyncThunk(
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Failed to fetch news feed'
+					error.response.data?.message || 'Failed to fetch news feed',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -375,7 +379,7 @@ export const getNewsFeed = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Fetch User Profile with Activity Summary
@@ -407,7 +411,7 @@ export const fetchUserProfile = createAsyncThunk(
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Failed to fetch profile'
+					error.response.data?.message || 'Failed to fetch profile',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -415,7 +419,7 @@ export const fetchUserProfile = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );
 
 // Upload Profile Picture
@@ -450,7 +454,7 @@ export const uploadProfilePicture = createAsyncThunk(
 						Authorization: `Bearer ${token}`,
 						'Content-Type': 'multipart/form-data',
 					},
-				}
+				},
 			);
 
 			return {
@@ -459,7 +463,7 @@ export const uploadProfilePicture = createAsyncThunk(
 		} catch (error) {
 			if (error.response) {
 				return rejectWithValue(
-					error.response.data?.message || 'Failed to upload profile picture'
+					error.response.data?.message || 'Failed to upload profile picture',
 				);
 			} else if (error.request) {
 				return rejectWithValue('No response from server');
@@ -467,5 +471,5 @@ export const uploadProfilePicture = createAsyncThunk(
 				return rejectWithValue(error.message);
 			}
 		}
-	}
+	},
 );

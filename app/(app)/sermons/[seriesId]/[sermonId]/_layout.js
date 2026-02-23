@@ -4,8 +4,8 @@ export default function SermonDetailLayout() {
 	return (
 		<Stack
 			screenOptions={{
-				headerShown: true,
-				headerTransparent: true,
+				headerShown: false,
+
 				headerBackTitleVisible: false,
 			}}
 		>

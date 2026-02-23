@@ -1,9 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
 	fetchSeries,
+	fetchSeriesById,
 	fetchSermonDetails,
 	fetchSermonDiscussions,
 	fetchSermons,
+	fetchSermonsForSeries,
+	updateSeries,
 } from './sermonThunk';
 
 const initialState = {
@@ -14,8 +17,11 @@ const initialState = {
 	current: [],
 	upcoming: [],
 	past: [],
+	selectedSeries: null,
 	loading: false,
 	error: null,
+	seriesUpdating: false,
+	seriesUpdateError: null,
 };
 
 const sermonSlice = createSlice({
@@ -42,6 +48,9 @@ const sermonSlice = createSlice({
 		},
 		setPastSeries(state, action) {
 			state.past = action.payload;
+		},
+		clearSelectedSeries(state) {
+			state.selectedSeries = null;
 		},
 	},
 	extraReducers: (builder) => {
@@ -103,6 +112,63 @@ const sermonSlice = createSlice({
 			.addCase(fetchSeries.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.payload;
+			})
+
+			// Fetch series by ID
+			.addCase(fetchSeriesById.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchSeriesById.fulfilled, (state, action) => {
+				state.loading = false;
+				state.selectedSeries = action.payload;
+			})
+			.addCase(fetchSeriesById.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload;
+			})
+
+			// Fetch sermons for a series
+			.addCase(fetchSermonsForSeries.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchSermonsForSeries.fulfilled, (state, action) => {
+				state.loading = false;
+				state.sermons = action.payload.sermons;
+			})
+			.addCase(fetchSermonsForSeries.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload;
+			})
+
+			// Update series
+			.addCase(updateSeries.pending, (state) => {
+				state.seriesUpdating = true;
+				state.seriesUpdateError = null;
+			})
+			.addCase(updateSeries.fulfilled, (state, action) => {
+				state.seriesUpdating = false;
+				state.seriesUpdateError = null;
+				const updated = action.payload;
+				if (updated) {
+					if (state.selectedSeries?.id === updated.id) {
+						state.selectedSeries = { ...state.selectedSeries, ...updated };
+					}
+					const allSeries = [
+						...state.current,
+						...state.upcoming,
+						...state.past,
+					].map((s) => (s.id === updated.id ? { ...s, ...updated } : s));
+					const categorized = categorizeSeries(allSeries);
+					state.current = categorized.current;
+					state.upcoming = categorized.upcoming;
+					state.past = categorized.past;
+				}
+			})
+			.addCase(updateSeries.rejected, (state, action) => {
+				state.seriesUpdating = false;
+				state.seriesUpdateError = action.payload;
 			});
 	},
 });
@@ -129,4 +195,5 @@ const categorizeSeries = (series) => {
 	return { current, upcoming, past };
 };
 
+export const { clearSelectedSeries } = sermonSlice.actions;
 export default sermonSlice.reducer;

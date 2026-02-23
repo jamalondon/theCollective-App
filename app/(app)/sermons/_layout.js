@@ -4,12 +4,11 @@ export default function SermonsLayout() {
 	return (
 		<Stack
 			screenOptions={{
-				headerShown: true,
-				headerTransparent: true,
+				headerShown: false,
 			}}
 		>
 			{/* Provide a friendly title instead of route name "index" */}
-			<Stack.Screen name="index" options={{ headerShown: false }} />
+			<Stack.Screen name="index" />
 		</Stack>
 	);
 }

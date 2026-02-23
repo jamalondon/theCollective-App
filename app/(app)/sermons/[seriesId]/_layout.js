@@ -4,12 +4,18 @@ export default function SeriesDetailLayout() {
 	return (
 		<Stack
 			screenOptions={{
-				headerShown: true,
-				headerTransparent: true,
-				headerBackTitleVisible: false,
+				headerShown: false,
+				headerBackTitleVisible: true,
+				headerBackTitle: 'Back',
 			}}
 		>
-			<Stack.Screen name="index" options={{ title: 'Series' }} />
+			<Stack.Screen
+				name="index"
+				options={{
+					title: '',
+					headerTintColor: '#fff',
+				}}
+			/>
 			<Stack.Screen name="[sermonId]" />
 		</Stack>
 	);
